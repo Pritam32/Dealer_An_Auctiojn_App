@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "667700018234",
+    "project_id": "dealer-1d483",
+    "storage_bucket": "dealer-1d483.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667700018234:android:53489d2b5833ebb9e00903",
+        "android_client_info": {
+          "package_name": "com.dealer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667700018234-ou473f19jgc2d54k4s042dlc9l1c6tdk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDp9pOPwEAGkmJNyETkLCNwUxYddDjmBDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667700018234-ou473f19jgc2d54k4s042dlc9l1c6tdk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
