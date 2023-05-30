@@ -1,17 +1,16 @@
-import { View, Text,Image,TouchableOpacity, ScrollView,StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Divider } from 'react-native-elements'
+import { View, Text,Image,TouchableOpacity, ScrollView,StyleSheet,LogBox } from 'react-native'
+import React, { Component, useEffect, useState } from 'react'
 import Auction from '../screens/Auction'
 import { useLinkProps, useNavigation } from '@react-navigation/native'
 import { firebase } from '@react-native-firebase/firestore'
 
+
 const AuctionCard =({item}) => {
   const navigation=useNavigation();
   const user=firebase.auth().currentUser;
-
-  useEffect(()=>{
-    deleteItem();
-  })
+  var cnt=0;
+  
+  
   
 
   const Addparticipant=()=>{
@@ -22,20 +21,14 @@ const AuctionCard =({item}) => {
       desc:item.desc,
       amount:0,
       
-      
-    }).then(()=>{
+  }).then(()=>{
       navigation.navigate('Auction',{img:item.image,item:item});
     })
+
   }
 
-  const deleteItem=()=>{
-    const d=new Date().getDate();
-    const b=Number(item.Date);
-    if((b+3)<=d){
-      firebase.firestore().collection('Auctions').doc(item.id).delete()
-      .then(()=>console.log("Auction deleted successfully"));
-    }
-  }
+  
+  
   return (
    
    <View style={{marginBottom:40,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -45,10 +38,14 @@ const AuctionCard =({item}) => {
         <Image source={{uri:item.image}} style={{width:300,height:230}} resizeMode="stretch"/>
         </View>
         <View style={{paddingVertical:20}}>
-        <Text style={{color:'black',fontSize:18,marginBottom:10,fontWeight:'bold'}}>{item.Item}</Text>
+        <View style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between'}}>
+        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold'}}>{item.Item}</Text>
+        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold',color:'green'}}> ₹ {item.value}</Text>
+        </View>
         <Text style={{color:'black',fontSize:16}}>
          {item.desc}
         </Text>
+        
         </View>
         <TouchableOpacity onPress={Addparticipant}>
           <Text style={{backgroundColor:'#4830D3',textAlign:'center',padding:15,color:'white',fontSize:18,borderRadius:30}}>Participate</Text>

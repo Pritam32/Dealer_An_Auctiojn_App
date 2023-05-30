@@ -1,4 +1,4 @@
-import { View, Text,Image, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { View, Text,Image, ScrollView, TouchableOpacity, Alert,ActivityIndicator} from 'react-native'
 import React,{useState} from 'react'
 import { TextInput } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
@@ -13,30 +13,63 @@ const Register = ({navigation}) => {
   const [password,setpassword]=useState('');
   const [name,setName]=useState('');
   const [address,setAddress]=useState('');
+  const [show,setShow]=useState(false);
+  const [result,setResult]=useState();
 
-  const Signup=()=>{
-    if(email!='' && password!='' && name!='' && address!=''){
-      auth()
-      .createUserWithEmailAndPassword(email.trim(),password)
-      .then(async() => {
-        await firebase.firestore().collection('Users').add({
-          
-          name:name,
-          email:email,
-          password:password,
-          address:address,
-      })
-      })
-      .then(async()=>{
-        
-        navigation.navigate('Portals');
-      })
-      
+  const Signup=async()=>{
+    if(name=== '' || email === '' || password === '' || address ==="") {
+      Alert.alert('Invalid','Enter details to signup!')
     }
     else{
-      Alert.alert('Invalid',"All Fields are required !")
-    } 
+      setShow(true);
+      const result=await auth()
+      .createUserWithEmailAndPassword(email.trim(),password)
+      .catch(error=>{
+        if (error.code === 'auth/invalid-email') {
+          setshow(false);
+          alert('Invalid Email or Password !');
+        }
+        else if(error.code === 'auth/network-request-failed'){
+          setShow(false);
+          alert("No Internet Connection !");
+          console.log("no internet");
+        }
+        else if(error.code === 'auth/email-already-in-use'){
+          setShow(false);
+          alert(" User Already Exists !");
+          console.log("User already exists");
+        }
+    
+        console.error(error);
+      })
+        setResult(result);
+        firebase.firestore().collection('Users').doc(result.user.uid).set({
+          name:name,
+          email:result.user.email,
+          uid:result.user.uid,
+          password:password,
+          address:address,
+          logged_in:false,
+      })
+     
+  
+      .then(() => {
+        firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).update({
+          logged_in:true,
+        })
+        setName("");
+        setEmail("");
+        setpassword("");
+        setAddress("");
+        navigation.navigate("Portals");
+        
+      })
+         
+    
+      }
+      
   }
+  
   return (
     <View style={{flex:1,backgroundColor:'white'}}>
     <ScrollView>
@@ -46,17 +79,17 @@ const Register = ({navigation}) => {
       </View>
       <View style={{marginTop:20}}>
       <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Username" onChangeText={(val)=>setName(val)} />
+        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Username" onChangeText={(val)=>setName(val)} value={name} />
       </View>
       <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Email" onChangeText={(val)=>setEmail(val)} />
+        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Email" onChangeText={(val)=>setEmail(val)} value={email} />
       </View>
       <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Password" onChangeText={(val)=>setpassword(val)} secureTextEntry />
+        <TextInput style={{width:350,height:50,fontSize:18}} placeholder="Password" onChangeText={(val)=>setpassword(val)}  value={password} secureTextEntry />
       </View>
       <View style={{marginHorizontal:30,marginVertical:10}}>
         <TextInput style={{width:350, height:50,fontSize:18}}
-                    placeholder='Address' onChangeText={(val)=>setAddress(val)}/>
+                    placeholder='Address' onChangeText={(val)=>setAddress(val)} value={address}/>
                     
       </View>
       <View style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:10}}>
@@ -71,6 +104,7 @@ const Register = ({navigation}) => {
       <Text style={{color:'blue',fontSize:18}}> Sign in</Text>
       </TouchableOpacity>
     </View>
+    <ActivityIndicator color='#3196c4' size={40} style={{marginTop:30}} animating={show}/>
     </ScrollView>
     </View>
   )

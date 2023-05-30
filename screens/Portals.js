@@ -3,32 +3,43 @@ import React, { useEffect,useState } from 'react'
 import Home from './Home'
 import Organiser from './Organiser'
 import { firebase } from '@react-native-firebase/firestore';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Profile from './Profile';
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Entypo';
+import Icon1 from 'react-native-vector-icons/AntDesign';
+import Icon2 from 'react-native-vector-icons/Ionicons';
+import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
+import MyAuc from './MyAuc';
 
-const Portals = ({navigation}) => {
+  const Tab=createBottomTabNavigator();
 
-  
-
-  
-  return (
-    <View style={{display:'flex',alignItems:'center',justifyContent:'center',backgroundColor:'white',flex:1}}>
-         <Text style={{color:'black',fontSize:25,fontWeight:'bold'}}>Choose Your Category:</Text>
-         <TouchableOpacity onPress={()=>navigation.navigate('Organiser')}>
-         <View style={{marginTop:30,backgroundColor:'#f56e64',borderWidth:2,borderColor:'black',width:200,height:150,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'white',fontSize:20}}>Organiser</Text>
-        </View>
-        </TouchableOpacity>   
-        <TouchableOpacity onPress={()=>navigation.navigate('Home')}>   
-        <View style={{backgroundColor:'#256330',borderWidth:2,borderColor:'black',width:200,height:150,marginTop:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'white',fontSize:20}}>Participant</Text>
-        </View>
-        </TouchableOpacity>
-        <TouchableOpacity>   
-        <View style={{backgroundColor:'#30418a',borderWidth:2,borderColor:'black',marginTop:30,width:200,height:150,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'white',fontSize:20}}>My Profile</Text>
-        </View>
-        </TouchableOpacity>   
-    </View>
-  )
-}
+const Portals = () => {
+  const navigation=useNavigation();
+return (
+    <Tab.Navigator initialRouteName='Home' screenOptions={{headerShown:false,tabBarShowLabel:false,tabBarStyle:{backgroundColor:'#4830D3',height:60}}}>
+      <Tab.Screen name='Home' component={Home} options={{
+        tabBarIcon:()=>(
+          <Icon name='home' size={35} color='white'/>
+        )
+      }}/>
+      <Tab.Screen name='Organiser' component={Organiser}  options={{
+        tabBarIcon:()=>(
+          <Icon1 name='pluscircleo' size={35} color='white'/>
+        )
+      }}/>
+      <Tab.Screen name='My Auc' component={MyAuc} options={{
+        tabBarIcon:()=>(
+          <Icon3 name='post-outline' size={35} color='white'/>
+        )
+      }}/>
+      <Tab.Screen name='Profile' component={Profile}  options={{
+        tabBarIcon:()=>(
+          <Icon2 name='person-circle-outline' size={35} color='white'/>
+        )
+      }}/>
+    </Tab.Navigator>
+    
+)}
 
 export default Portals;

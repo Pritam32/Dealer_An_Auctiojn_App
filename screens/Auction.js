@@ -1,9 +1,9 @@
 import { View, Text,Image,FlatList,ScrollView, TouchableOpacity,RefreshControl,TextInput,StyleSheet} from 'react-native'
 import React, { useState , useEffect} from 'react'
-import { Divider } from 'react-native-elements'
 import { firebase } from '@react-native-firebase/firestore'
 import { useNavigation } from '@react-navigation/native';
 import  Home from './Home';
+
 
 const Auction = ({route}) => {
     const navigation=useNavigation();
@@ -11,7 +11,7 @@ const Auction = ({route}) => {
     const item=route.params.item;
     const [isfocus,setFocus]=useState(false);
     const [amount,setamount]=useState();
-    const [final,setfinal]=useState(0);
+    
     const[ending,setEnd]=useState();
     const month=new Date().getMonth()+1;
     const year=new Date().getFullYear();
@@ -20,28 +20,32 @@ const Auction = ({route}) => {
       
       const ref=firebase.firestore().collection('Auctions').doc(item.id);
       ref.onSnapshot((doc)=>{
-        const num=doc.data().Date;
-        const val=""+num;
-         setEnd(Number(val.substring(0,2))+2) 
+        const num=doc.data().date;
+        const val=String(num);
+        val.length>1?setEnd(Number(val.substring(0,2))+2):setEnd("0"+Number(val.substring(0,2))+2)
+         
       })
       
      
     })
 
     
-      
+    const [final,setfinal]=useState(item.value);
       
     
 
     const handlevalue=()=>{
        const ref=firebase.firestore().collection('Auctions').doc(item.id);
+       
        ref.update(
         {
           value:Math.max(amount,final),
+          winner:firebase.auth().currentUser.uid,
         }
        ).then(()=>{
         ref.onSnapshot((doc)=>{
           setfinal(doc.data().value);
+          console.log(final);
           
         })
        })
@@ -54,7 +58,7 @@ const Auction = ({route}) => {
       
     <Image source={{uri:img}}
       style={{width:'100%',height:250}} resizeMode="stretch"/>
-    <Divider style={{borderWidth:2,borderColor:'black'}}/>
+    <View style={{borderWidth:1,borderColor:'black'}}></View>
     <View style={{marginLeft:20,marginTop:20}}>
       <Text style={{color:'#535754',fontSize:20,fontWeight:'bold'}}>End Date: {ending}/{month.toLocaleString()}/{year.toLocaleString()} </Text>
     </View>
@@ -62,7 +66,7 @@ const Auction = ({route}) => {
     <View>
       <Text style={{color:'#A84448',fontSize:22,marginLeft:20,paddingVertical:10,fontWeight:'bold'}}>Min Amount: Rs {final}</Text>
     </View>
-    <Divider style={{borderColor:'black',backgroundColor:'black',height:2}}/>
+    <View style={{borderWidth:1,borderColor:'black'}}></View>
     <View style={{marginHorizontal:20}}>
      <Text style={{color:'black',fontSize:20,marginTop:30}}>Enter Your Amount:</Text>
       <TextInput style={isfocus?styles.inputfocus:styles.input} onFocus={()=>setFocus(true)} onChangeText={(val)=>setamount(val)}/>
