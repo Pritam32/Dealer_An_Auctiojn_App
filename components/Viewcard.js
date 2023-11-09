@@ -1,27 +1,25 @@
 import { View, Text,Image,TouchableOpacity,ScrollView,StyleSheet } from 'react-native'
 import React from 'react'
+import ChatScreen from '../screens/ChatScreen'
+
+import { useLinkProps, useNavigation } from '@react-navigation/native'
 
 const Viewcard = ({item}) => {
+  const navigator=useNavigation();
   return (
-    <View style={{marginBottom:40,display:'flex',alignItems:'center',justifyContent:'center'}}>
+    <View style={{marginBottom:"5%",display:'flex',alignItems:'center',justifyContent:'center'}}>
    <ScrollView scrollEnabled>
    <View style={[styles.card, styles.elevation]}>
-        <View>
-        <Image source={{uri:item.image}} style={{width:300,height:230}} resizeMode="stretch"/>
-        </View>
-        <View style={{paddingVertical:20}}>
+        
+        <View style={{paddingVertical:5}}>
         <View style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between'}}>
-        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold'}}>{item.Item}</Text>
-        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold',color:'green'}}> ₹ {item.value}</Text>
+        <Text style={{color:'white',fontSize:20,marginBottom:10,fontWeight:'bold'}}>{item.Item}</Text>
+        <Text style={{fontSize:20,marginBottom:10,fontWeight:'bold',color:'#59d43d'}}> ₹ {item.value}</Text>
         </View>
-        <Text style={{color:'black',fontSize:16}}>
-         {item.desc}
-        </Text>
+       
         
         </View>
-        <TouchableOpacity>
-          <Text style={{backgroundColor:'#4830D3',textAlign:'center',padding:15,color:'white',fontSize:18,borderRadius:30}}>Pay Now</Text>
-        </TouchableOpacity>
+       
 </View>
     </ScrollView>
    </View>
@@ -41,16 +39,16 @@ const styles = StyleSheet.create({
     marginBottom: 13,
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: '#4b4d4b',
     borderRadius: 8,
     paddingVertical: 20,
     paddingHorizontal: 25,
-    width: '100%',
-    marginVertical: 10,
+    width: 350,
+    marginVertical:5,
   },
   elevation: {
     elevation: 20,
-    shadowColor: '#52006A',
+    shadowColor: 'white',
   },
 });
 

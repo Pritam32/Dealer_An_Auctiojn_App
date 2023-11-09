@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "667700018234-ou473f19jgc2d54k4s042dlc9l1c6tdk.apps.googleusercontent.com",
+          "client_id": "667700018234-tqtcui8fbu6i8ufnqmddq6fg2qtbhttn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dealer",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "667700018234-0q0imclf3hf3o0rhs30m5da6nt7ul5fe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "667700018234-ou473f19jgc2d54k4s042dlc9l1c6tdk.apps.googleusercontent.com",
+              "client_id": "667700018234-0q0imclf3hf3o0rhs30m5da6nt7ul5fe.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

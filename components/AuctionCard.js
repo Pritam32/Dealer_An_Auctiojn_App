@@ -1,25 +1,70 @@
 import { View, Text,Image,TouchableOpacity, ScrollView,StyleSheet,LogBox } from 'react-native'
 import React, { Component, useEffect, useState } from 'react'
 import Auction from '../screens/Auction'
-import { useLinkProps, useNavigation } from '@react-navigation/native'
-import { firebase } from '@react-native-firebase/firestore'
+import {firebase} from '@react-native-firebase/auth'
+import { useNavigation } from '@react-navigation/native'
+import { firestore } from '@react-native-firebase/firestore'
 
+
+LogBox.ignoreAllLogs(true);
 
 const AuctionCard =({item}) => {
   const navigation=useNavigation();
-  const user=firebase.auth().currentUser;
-  var cnt=0;
+  const [organiser,setorganiser]=useState(true);
+  const [show,setshow]=useState(false);
+
+  useEffect(()=>{
+    if(firebase.auth().currentUser.uid!=item.organiser){
+      setorganiser(false);
+      console.log('not organiser');
+    }
+   
+  })
   
   
   
+ setTimeout(()=>{
+    
+  
+     firebase.firestore().collection('Users').doc(item.winner).collection('Won_Auctions').add({
+        ItemId:item.id,
+        Item_Name:item.Item,
+          
+          Img: item.image,
+          value:item.value,
+          organiser:item.organiser,
+          winner:item.winner,
+        
+      }).then(()=>{
+        firebase.firestore().collection('Users').doc(item.organiser).collection('My_Auctions').add({
+          ItemId:item.id,
+          Item_Name:item.Item,
+            
+            Img: item.image,
+            value:item.value,
+            organiser:item.organiser,
+            winner:item.winner,
+          
+        })
+          .then(()=>{
+            firebase.firestore().collection('Auctions').doc(item.id).delete();
+         })
+        })
+     
+    }
+  
+    
+     
+    
+  ,1000);
 
   const Addparticipant=()=>{
     
     firebase.firestore().collection('Auctions').doc(item.id).collection('participants').add({
-      name:null,
+      name:"",
+      id:item.id,
       Item:item.Item,
-      desc:item.desc,
-      amount:0,
+      amount:item.value,
       
   }).then(()=>{
       navigation.navigate('Auction',{img:item.image,item:item});
@@ -31,26 +76,38 @@ const AuctionCard =({item}) => {
   
   return (
    
-   <View style={{marginBottom:40,display:'flex',alignItems:'center',justifyContent:'center'}}>
+   <View style={{marginBottom:50,display:'flex',alignItems:'center',justifyContent:'center'}}>
    <ScrollView scrollEnabled>
    <View style={[styles.card, styles.elevation]}>
-        <View>
-        <Image source={{uri:item.image}} style={{width:300,height:230}} resizeMode="stretch"/>
-        </View>
-        <View style={{paddingVertical:20}}>
-        <View style={{display:'flex',alignItems:'center',flexDirection:'row',justifyContent:'space-between'}}>
-        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold'}}>{item.Item}</Text>
-        <Text style={{color:'black',fontSize:20,marginBottom:10,fontWeight:'bold',color:'green'}}> ₹ {item.value}</Text>
-        </View>
-        <Text style={{color:'black',fontSize:16}}>
-         {item.desc}
-        </Text>
         
+       
+     
+          <TouchableOpacity onPress={()=>setshow(!show)}>
+          <View>
+        <Image source={{uri:item.image}} style={{width:250,height:250}} resizeMode="cover"/>
+        {show?
+        <View style={{backgroundColor:'rgba(0,0,0,0.7)',width:'100%',height:250,position:'absolute'}}>
+         {organiser?
+          <Text style={{color:'white',textAlign:'center',top:'40%',fontSize:18}}>{item.Item}</Text>:
+          <>
+          <View>
+          <Text style={{color:'white',textAlign:'center',top:'40%',fontSize:18}}>{item.Item}</Text>
+          
+          <View style={{width:'100%',display:'flex',alignItems:'center',top:'40%'}}>
+          
+          <TouchableOpacity onPress={Addparticipant}>
+          <Text style={{color:'white',textAlign:'center',fontSize:18,backgroundColor:'#349953',padding:"3%",borderRadius:10,marginVertical:'5%'}}>Bid Now</Text>
+          </TouchableOpacity>
+          </View>
+          </View>
+          </>
+         }
+          
+        </View>:null}
         </View>
-        <TouchableOpacity onPress={Addparticipant}>
-          <Text style={{backgroundColor:'#4830D3',textAlign:'center',padding:15,color:'white',fontSize:18,borderRadius:30}}>Participate</Text>
         </TouchableOpacity>
-</View>
+       
+        </View>
     </ScrollView>
    </View>
   )
@@ -67,10 +124,10 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 8,
-    paddingVertical: 45,
-    paddingHorizontal: 25,
+    paddingHorizontal:5,
+    paddingVertical:5,
     width: '100%',
-    marginVertical: 10,
+    
   },
   elevation: {
     elevation: 20,

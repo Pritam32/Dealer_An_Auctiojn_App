@@ -1,33 +1,30 @@
 import { View, Text ,Image} from 'react-native'
 import React, { useEffect,useState } from 'react'
 import Portals from './Portals'
+import Home from './Home'
 import { useNavigation } from '@react-navigation/native'
 import Login from './Login'
 import auth from '@react-native-firebase/auth';
 import {firebase} from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import StartScreen from './StartScreen'
 
 const SplashScreen = () => {
-  const [isloggedin,setloggedin]=useState(false);
+ 
     const Navigation=useNavigation();
     useEffect(()=>{
-      if(firebase.auth().currentUser!=null){
-        firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).get()
-      .then(documentSnapshot=>{
-          if(documentSnapshot.exists){
-            setloggedin(documentSnapshot.data().logged_in);
-          }
-      })
-      }
+      
       setTimeout(()=>{
-        isloggedin?Navigation.navigate('Portals'):Navigation.navigate('Login');
+        Navigation.navigate('StartScreen');
     },5000)
       
        
     })
+
   return (
     
-    <View style={{flex:1,backgroundColor:'white',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <Image source={require('../screens/logo.jpg')} style={{width:250,height:180}}/>
+    <View style={{flex:1,backgroundColor:'black',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <Image source={require('../screens/Dealer_logo.png')} style={{width:250,height:180}}/>
     </View>
   )
 }

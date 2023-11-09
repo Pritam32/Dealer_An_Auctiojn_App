@@ -7,11 +7,11 @@ import NoInternet from '../components/NoInternet';
 import Profile from './Profile';
 import Icon from 'react-native-vector-icons/AntDesign'
 
-const MyAuc = ({navigation}) => {
+const WonAuc = ({navigation}) => {
   
   const [isConnected,setIsConnected]=useState(false);
   const [list,setList]=useState([]);
-  const ref=firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection('My_Auctions');
+  const ref=firebase.firestore().collection('Users').doc(firebase.auth().currentUser.uid).collection('Won_Auctions');
   const [End,setEnd]=useState();
   
   useEffect(
@@ -23,28 +23,31 @@ const MyAuc = ({navigation}) => {
         list1.push({
           uid:doc.data().ItemId,
           Item:doc.data().Item_Name,
+          
+        
           image:doc.data().Img,
           value:doc.data().value,
           organiser:doc.data().organiser,
           winner:doc.data().winner,
+
         })
         
       })
       
        setList(list1);
-      console.log(list);
-    
+      
     
   })
+  console.log(list);
 });
   return (
     <View style={{backgroundColor:'black'}}> 
     {isConnected==true?(<>
     <View style={{display:'flex',alignItems:'center',justifyContent:'center',padding:15,backgroundColor:'green',marginBottom:20,flexDirection:'row'}}>
       <TouchableOpacity onPress={()=>navigation.navigate('Profile')} style={{marginLeft:'10%'}}>
-      <Icon name='arrowleft' size={30}  color="white"/>
+      <Icon name='arrowleft' size={30}  color="white" />
       </TouchableOpacity>
-      <Text style={{textAlign:'center',fontSize:25,color:'white',fontWeight:'500',fontStyle:'italic',width:"100%"}}> My Auctions </Text>
+      <Text style={{textAlign:'center',fontSize:25,color:'white',fontWeight:'500',fontStyle:'italic',width:'100%'}}>Auctions Won</Text>
     </View>
    
     {list!=''?
@@ -59,7 +62,7 @@ const MyAuc = ({navigation}) => {
             </ScrollView>
           )}/>:
              <View style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'50%'}}>
-            <Text style={{color:'gray',alignSelf:'center',fontSize:23}}>No Auctions Created</Text>
+            <Text style={{color:'gray',alignSelf:'center',fontSize:23}}>No Auctions Won</Text>
             </View>
           }
     
@@ -72,4 +75,4 @@ const MyAuc = ({navigation}) => {
   )
 }
 
-export default MyAuc;
+export default WonAuc;

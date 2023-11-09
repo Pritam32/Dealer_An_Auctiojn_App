@@ -7,22 +7,33 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage'
 import Home from './Home'
 import { useNavigation } from '@react-navigation/native'
-
-
+import NoInternet from '../components/NoInternet'
+import ComboBox from '../components/Combobox'
 
 
 const Organiser = () => {
+
+  const [change,setchange]=useState(true);
+  const [isConnected,setIsConnected]=useState(false);
   const [image, setImage] = useState(null);
   const [itemname,setitem]=useState();
   const [final,setFinal]=useState();
-  const[desc,setDesc]=useState();
+  
   const [isloading,setisLonding]=useState(false);
   const user=firebase.auth().currentUser;
   const navigation=useNavigation();  
   const[show,setShow]=useState(false);
   const[minamount,setMin]=useState();
   const [modalVisible,setModalVisible]=useState(false);
-  const [upi,setUpi]=useState("");
+
+  const [selectedValue, setSelectedValue] = useState('option1');
+
+  const options = [
+    { label: 'Option 1', value: 'option1' },
+    { label: 'Option 2', value: 'option2' },
+    { label: 'Option 3', value: 'option3' },
+  ];
+  
   
   const takePhotoFromCamera = () => {
     PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA) ;
@@ -54,32 +65,33 @@ const Organiser = () => {
   
     const submitPost = async () => {
       setShow(true);
+      setchange(false);
       const imageUrl = await uploadImage();
       console.log('Image Url: ', imageUrl);
       console.log('Post: ', itemname);
       
       const date=new Date();
 
-      let day=date.getDate().toLocaleString();
-    let mon=date.getMonth()+1;
-    let yr=date.getFullYear().toLocaleString();
+   
       
         firestore().collection('Auctions').add({
         
         Item_Name:itemname,
-        desc:desc,
+        
         Img: imageUrl,
         value:minamount,
         Time:firestore.Timestamp.fromDate(new Date()),
-        date:day+"/"+mon+"/"+yr,
+        date:Date.now(),
         winner:null,
-        upi:upi,
+        organiser:firebase.auth().currentUser.uid,
+
         
       }).then(()=>{
-        setDesc("");
+        
         setitem("");
-        setUpi("");
+        setMin("");
         setShow(false);
+        setchange(true);
         setImage(null);
         navigation.navigate('Home');
         
@@ -133,34 +145,30 @@ const Organiser = () => {
 
 
   return (
-    <View>
-      
+    <View style={{backgroundColor:'black'}}>
+      {isConnected==true?(<>
       <ScrollView>
       
     <View style={{display:'flex',alignItems:'center'}}>
-      <Image source={require('../screens/logo.jpg')} style={{width:200,height:100,alignSelf:'center',marginTop:30}}/>
-      <Text style={{color:'black',marginTop:20,fontSize:30,fontWeight:'600'}}>Add Your Auction</Text>
+      
+      <Text style={{color:'white',marginTop:"20%",fontSize:30,fontWeight:'600'}}>Add Your Auction</Text>
       </View>
-      <View style={{marginTop:10}}>
-      <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350,height:50}} placeholder="Item name" onChangeText={(val)=>setitem(val)} value={itemname}/>
+      <View style={{marginTop:"10%"}}>
+      <View style={{marginHorizontal:"8%",marginVertical:"3%"}}>
+        <TextInput  label="Item name" onChangeText={(val)=>setitem(val)} value={itemname} editable={change}/>
       </View>
-      <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350, height:50, color:'white'}} placeholder='Min Amount' onChangeText={(val)=>setMin(val)} value={minamount}/>
+      <View style={{marginHorizontal:"8%",marginVertical:"3%"}}>
+        <TextInput label='Min Amount'  underlineColor='white' activeUnderlineColor='green' onChangeText={(val)=>setMin(val)} value={minamount} editable={change} keyboardType='numeric'/>
       </View>
-      <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350, height:50, color:'white'}} placeholder='Description' onChangeText={(val)=>setDesc(val)} value={desc}/>
-      </View>
-      <View style={{marginHorizontal:30,marginVertical:10}}>
-        <TextInput style={{width:350, height:50, color:'white'}} placeholder='UPI ID' onChangeText={(val)=>setUpi(val)} value={upi}/>
-      </View>
+      
+     
     </View>
     <Modal
         animationType="none"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
+          
           setModalVisible(!modalVisible);
         }} style={{display:'flex'}}>
         <View style={{flex:1,backgroundColor:'#000A'}}>
@@ -178,23 +186,26 @@ const Organiser = () => {
       </Modal>
     <View style={{display:'flex',flexDirection:'row',marginTop:20, alignItems:'center',justifyContent:'center'}}>
     <TouchableOpacity onPress={choosePhotoFromLibrary }>
-      <Text style={{textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#3196c4'}}>Upload Image</Text>
+      <Text style={{textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#349953',borderRadius:20}}>Upload Image</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={takePhotoFromCamera}>
-      <Text style={{marginLeft:20,textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#3196c4'}}>Camera</Text>
+      <Text style={{marginLeft:20,textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#349953',borderRadius:20}}>Camera</Text>
       </TouchableOpacity>
     </View>
     
     
     <View style={{display:'flex',alignItems:'center',marginTop:20,marginBottom:20}}>
     <TouchableOpacity onPress={submitPost}>
-      <Text style={{textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#3196c4',borderRadius:100}}>ADD</Text>
+      <Text style={{textAlign:'center',color:'white',width:150,padding:10,fontSize:18,backgroundColor:'#349953',borderRadius:100}}>ADD</Text>
       </TouchableOpacity>
-    {show? <ActivityIndicator size="large" color="#0000ff" style={{marginTop:20}} />:null}
+    {show? <ActivityIndicator size="large" color="green" style={{marginTop:20}} />:null}
     </View>
-   </ScrollView>
+   </ScrollView></>):null}
+
+   <NoInternet
+    isConnected={isConnected}
+    setIsConnected={setIsConnected}/>
     </View>
-  
     
   )
 }
